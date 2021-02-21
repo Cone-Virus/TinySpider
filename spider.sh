@@ -10,7 +10,10 @@ Created by: @Cone_Virus     |
 
 function help_menu()
 {
-        echo "Usage: ./spider.sh <Target URL> 
+        echo "Usage: ./spider.sh <Option>
+
+-H <Target URL>                  : Spiders Target URL
+-X <Target URL with sitemap.xml> : Spiders sitemap
         "
         exit 0
 }
@@ -75,17 +78,53 @@ function robotspider()
                         echo "Resources:"
                         cat $robot | grep ".*: " | grep -v "User-agent" | grep -v "sitemap.xml" | cut -d " " -f2-
                         echo "Sitemap:"
-                        sitemap=$(cat $robot | grep "sitemap.xml" | cut -d " " -f 2)
-                        echo $sitemap
+                        sitemapcheck=$(cat $robot | grep "sitemap.xml" | cut -d " " -f 2)
+                        if ! [[ -z "$sitemapcheck" ]]
+                        then
+                                sitemapspider $sitemapcheck
+                        else
+                                echo "Sitemap not found"
+                        fi
                 fi
         fi
         rm $robot
 }
 
+#Parse Sitemap
+function sitemapspider()
+{
+        sitemap=$(mktemp SITE-XXXXX)
+        curl -s -o "$sitemap" "$1"
+        results=$(cat $sitemap | sed -n 's/<loc>\(.*\)<\/loc>/\1/p')
+        for i in $results
+        do
+                echo "Sitemap results for $i"
+                if [[ "$i" == *".xml" ]]
+                then
+                        curl -s -o "$sitemap" "$i"
+                        currentsitemap=$(cat $sitemap | sed -n 's/<loc>\(.*\)<\/loc>/\1/p')
+                        for a in $currentsitemap
+                        do
+                                echo $a
+                        done
+                fi
+        done
+        rm $sitemap
+}
+
+
+#Options
 if [[ $# == 0 ]]
 then
         help_menu
+elif [[ "$1" == "-H" ]]
+then
+        simplespider $2
+        robotspider $2
+elif [[ "$1" == "-X" ]]
+then
+        sitemapspider $2
 else
-        simplespider $1 
-        robotspider $1
+        help_menu
 fi
+
