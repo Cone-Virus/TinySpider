@@ -12,6 +12,7 @@ function help_menu()
 {
         echo "Usage: ./spider.sh <Option>
 
+--Options--
 -H <Target URL>                  : Spiders Target URL
 -X <Target URL with sitemap.xml> : Spiders sitemap
         "
