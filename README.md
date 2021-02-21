@@ -6,12 +6,15 @@ Because I needed a simple web spider that wasn't under a GPL license and I also 
 ```
 ./spider.sh
 
-
 ▀█▀ █ █▄░█ █▄█   █▀ █▀█ █ █▀▄ █▀▀ █▀█
 ░█░ █ █░▀█ ░█░   ▄█ █▀▀ █ █▄▀ ██▄ █▀▄
 Created by: @Cone_Virus     |
                             |
                            3oƐ 
 
-Usage: ./spider.sh <Target URL> 
+Usage: ./spider.sh <Option>
+
+-H <Target URL>                  : Spiders Target URL
+-X <Target URL with sitemap.xml> : Spiders sitemap
+
 ```
