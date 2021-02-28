@@ -22,7 +22,7 @@ function help_menu()
 #Catch URL's on given webpage
 function simplespider()
 {
-        result=$(curl -s $1)
+        result=$(curl -s $1 --insecure)
         hrefresult=$(echo "$result" | sed -n 's/.*href="\([^"]*\).*/\1/p')
         srcresult=$(echo "$result" | sed -n 's/.*src="\([^"]*\).*/\1/p')
         for i in $hrefresult
@@ -60,12 +60,12 @@ function robotspider()
         ##Temp Files
         robot=$(mktemp ROBOT-XXXXX)
         #Robots
-        result=$(curl -s -o /dev/null -w "%{http_code}" "$1/robots.txt")
+        result=$(curl --insecure -s -o /dev/null -w "%{http_code}" "$1/robots.txt")
         if [[ "$result" == "404"  || "$result" == "503" ]]
         then
                 echo "Robots.txt not found."
         else
-                curl -s -o "$robot" "$1/robots.txt" 
+                curl --insecure -s -o "$robot" "$1/robots.txt" 
                 check=$(cat $robot | grep User-agent)
                 if [[ -z "$check" ]]
                 then
@@ -95,14 +95,14 @@ function robotspider()
 function sitemapspider()
 {
         sitemap=$(mktemp SITE-XXXXX)
-        curl -s -o "$sitemap" "$1"
+        curl --insecure -s -o "$sitemap" "$1"
         results=$(cat $sitemap | sed -n 's/<loc>\(.*\)<\/loc>/\1/p')
         for i in $results
         do
                 echo "Sitemap results for $i"
                 if [[ "$i" == *".xml" ]]
                 then
-                        curl -s -o "$sitemap" "$i"
+                        curl --insecure -s -o "$sitemap" "$i"
                         currentsitemap=$(cat $sitemap | sed -n 's/<loc>\(.*\)<\/loc>/\1/p')
                         for a in $currentsitemap
                         do
@@ -128,4 +128,3 @@ then
 else
         help_menu
 fi
-
